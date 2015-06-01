@@ -54,12 +54,17 @@ byte MMA8452Q::init(MMA8452Q_Scale fsr, MMA8452Q_ODR odr)
 	}
 	
 	standby();  // Must be in standby to change registers
+	writeRegister(CTRL_REG1, 0x18);
 	
-	setScale(scale);  // Set up accelerometer scale
-	setODR(odr);  // Set up output data rate
-	setupPL();  // Set up portrait/landscape detection
-	// Multiply parameter by 0.0625g to calculate threshold.
-	setupTap(0x80, 0x80, 0x08); // Disable x, y, set z to 0.5g
+	// IIC_RegWrite(0x15, 0xD8)
+	writeRegister(FF_MT_CFG, 0xD8);
+
+	// IIC_RegWrite(0x17, 0x30)
+	writeRegister(FF_MT_THS, 20);
+
+	writeRegister(FF_MT_COUNT, 10);
+	writeRegister(CTRL_REG4, 0x04);
+	writeRegister(CTRL_REG5, 0x04);
 	
 	active();  // Set to active to start reading
 	
@@ -267,4 +272,10 @@ void MMA8452Q::readRegisters(MMA8452Q_Register reg, byte *buffer, byte len)
 
 	for(int x = 0 ; x < len ; x++)
 		buffer[x] = Wire.read();    
+}
+
+void MMA8452Q::clearIRQ() {
+	// perform a read to clear irq
+	// readRegister(INT_SOURCE);
+	readRegister(FF_MT_SRC);
 }

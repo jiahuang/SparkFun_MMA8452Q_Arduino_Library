@@ -98,7 +98,8 @@ public:
 	byte available();
 	byte readTap();
 	byte readPL();
-	
+	void clearIRQ();
+
     short x, y, z;
 	float cx, cy, cz;
 private:
