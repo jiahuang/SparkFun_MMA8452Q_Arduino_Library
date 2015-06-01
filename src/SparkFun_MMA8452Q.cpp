@@ -53,18 +53,17 @@ byte MMA8452Q::init(MMA8452Q_Scale fsr, MMA8452Q_ODR odr)
 		return 0;
 	}
 	
-	standby();  // Must be in standby to change registers
-	writeRegister(CTRL_REG1, 0x18);
+	// standby();  // Must be in standby to change registers
+	writeRegister(CTRL_REG1, 0x18); // 11000. DR0 = 1, DR1 = 1, ODR is set to 6.25Hz
 	
-	// IIC_RegWrite(0x15, 0xD8)
-	writeRegister(FF_MT_CFG, 0xD8);
+	writeRegister(FF_MT_CFG, 0xD8); // 11011000. XEFE=1, YEFE = 1, OAE = 1, ELE = 1
 
-	// IIC_RegWrite(0x17, 0x30)
-	writeRegister(FF_MT_THS, 20);
+	writeRegister(FF_MT_THS, 20); // 1.2g/0.063g = 20; 
 
-	writeRegister(FF_MT_COUNT, 10);
-	writeRegister(CTRL_REG4, 0x04);
-	writeRegister(CTRL_REG5, 0x04);
+	// Set the debounce counter to eliminate false readings for 100 Hz sample rate with a requirement of 100 ms timer
+	writeRegister(FF_MT_COUNT, 10); // 10 counts
+	writeRegister(CTRL_REG4, 0x04); // 100. INT_EN_FF_MT = 1
+	writeRegister(CTRL_REG5, 0x04); // 100. INT_CFG_FF_MT = 1
 	
 	active();  // Set to active to start reading
 	
